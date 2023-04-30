@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>계산기</title>
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    li {
+      list-style: none;
+    }
+
+    #result {
+      width: 180px;
+      height: 50px;
+      margin: 5px;
+      text-align: right
+    }
+
+    #operator {
+      width: 50px;
+      height: 50px;
+      margin: 5px;
+      text-align: center
+    }
+
+    button {
+      width: 50px;
+      height: 50px;
+      margin: 5px
+    }
+
+    .sub_content {
+      float: left;
+      width: 300px;
+      height: 400px;
+    }
+
+    .overflow {
+      overflow: auto;
+    }
+    .btn_4{width: 246px; height: 50px;}
+  </style>
+</head>
+
+<!-- 계산기 버튼 구현 -->
+
+<body>
+  <div class="sub_content">
+    <input readonly id="operator">
+    <input readonly type="text" id="result"> <!--readonly : 읽기 전용-->
+    <div class="row">
+      <button id="num-7">7</button>
+      <button id="num-8">8</button>
+      <button id="num-9">9</button>
+      <button id="plus">+</button>
+    </div>
+    <div class="row">
+      <button id="num-4">4</button>
+      <button id="num-5">5</button>
+      <button id="num-6">6</button>
+      <button id="minus">-</button>
+    </div>
+    <div class="row">
+      <button id="num-1">1</button>
+      <button id="num-2">2</button>
+      <button id="num-3">3</button>
+      <button id="divide">/</button>
+    </div>
+    <div class="row">
+      <button id="clear">C</button>
+      <button id="num-0">0</button>
+      <button id="point">.</button>
+      <button id="multiply">x</button>
+    </div>
+    <div class="row">
+      <button id="calculate" class ="btn_4">=</button>
+    </div>
+  </div>
+  <div class="sub_content overflow">
+    <div>
+      <ul id="calcHistory">
+      </ul>
+    </div>
+    <script>
+      let numOne = '';
+      let numTwo = '';
+      let prevOp = ''; //이전 op
+      let currOp = ''; //현재 op
+      let $operator = document.querySelector("#operator"); //+-*/ 표시
+      let $result = document.querySelector("#result"); //검색창
+
+      let opObj = {
+        plus: '+',
+        minus: '-',
+        divide: '/',
+        multiply: '*'
+      };
+
+      const onClickNumber = (event) => {// (선언)이벤트 정보를 전달하는 괄호가 없을 때 호출하는 쪽에도 괄호가 x
+        //EVENT 전달 (onClickNumber//onKeyDownNumber 합치기 가능)
+        if (!currOp) { //비어있다
+          numOne += event.target.textContent;
+          $result.value += event.target.textContent;
+          return;
+        }
+        //비어있지 x
+        if (!numTwo) {
+          $result.value = '';
+        }
+        numTwo += event.target.textContent;
+        $result.value += event.target.textContent;
+      }
+
+      const onKeyDownNumber = (num) => {
+        //고차함수 파라미터(event 정보 x)를 전달하는 함수 _키보드 1~9클릭이 되면 화면에 표시하기 위해서
+        if (!currOp) { //비어있다
+          numOne += num;
+          $result.value += num; //event에서 num으로 바꿔서 event.target.textContent;x
+          return;
+        }
+        //비어있지 x
+        if (!numTwo) {
+          $result.value = '';
+        }
+        numTwo += num;
+        $result.value += num;
+      }
+
+      for (let i = 0; i < 10; i++) {
+        document.querySelector(`#num-${i}`).addEventListener('click', onClickNumber);
+      }
+      document.querySelector(`#point`).addEventListener('click', onClickNumber);
+      const onClickOperator = (param) => {
+        let eventChk = param.isTrusted; //버튼 클릭 event x
+        let op = param; //1.2 번째줄 키보드로 사용할 떄 필요한 코드
+        if (eventChk != undefined) {
+          op = opObj[param.target.id];
+        }
+
+        if (numOne) {
+          if (numTwo) {
+            prevOp = currOp;
+            currOp = op;
+          } else {
+            currOp = op;
+          }
+
+          $operator.value = op;
+        } else {
+          alert('숫자를 먼저 입력하세요.');
+        }
+
+        if (numTwo) {
+          calculate('op', op);
+        }
+      }
+
+      for (let key in opObj) {
+        document.querySelector(`#${key}`).addEventListener('click', onClickOperator);
+      }
+
+      document.querySelector('#calculate').addEventListener('click', calculateResult);
+
+      function calculateResult() {
+        if (numTwo) {
+          calculate('calc', '');
+        } else {
+          alert('숫자를 먼저 입력하세요.');
+        }
+      }
+
+      function calculate(type, opType) {
+        let tmpOp = currOp;
+        if (type == 'op') {
+          tmpOp = prevOp;
+        }
+
+        let isWrite = true;
+        switch (tmpOp) {
+          case '+':
+          $result.value = parseFloat((Number(numOne) + Number(numTwo)).toFixed(1));
+            break;
+          case '-':
+          $result.value = parseFloat((Number(numOne) - Number(numTwo)).toFixed(1));
+            break;
+          case '*':
+          $result.value = Number(numOne) * Number(numTwo);
+            break;
+          case '/':
+          $result.value= Number(numOne) / Number(numTwo);
+            break;
+          default:
+            isWrite = false;
+            break;
+        }
+        if (isWrite) {
+          writeCalculateHistory(numOne, numTwo, tmpOp, $result.value);
+        } //결과를 쓰겠습니다
+
+        $operator.value = '';
+        numOne = $result.value;
+        numTwo = '';
+
+        if (type == 'calc') {
+          currOp = '';
+        } else {
+          prevOp = currOp;
+        }
+
+        if (numOne) {
+          currOp = opType;
+          $operator.value = opType;
+        }
+      }
+
+      document.querySelector('#clear').addEventListener('click', clearResult);
+
+      function clearResult() {
+        numOne = '';
+        currOp = '';
+        numTwo = '';
+        $operator.value = '';
+        $result.value = '';
+      }
+
+      document.addEventListener('keydown', (event) => {
+        console.log(event);//event 정보를 알아보기 위해
+        console.log(event.key);
+        let key = event.key;
+
+        if (!isNaN(Number(key)) || key === ".") {//숫자라는걸 명시해줌 number _!추가해서 숫자입력
+          onKeyDownNumber(key); // key를 전달해준다 //숫자 클릭하면 ok
+        } else { //기호가 자판으로 눌렀을 때
+          switch (key) {
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+              onClickOperator(key);
+              break;
+            case "=":
+            case "Enter":
+              calculateResult(); //전달하는 인수가 x_매개변수가 없기때문
+              break;
+            case "Escape":
+            case "c":
+              clearResult();
+              break;
+          }
+
+        }
+      });
+
+      function writeCalculateHistory(numOne, numTwo, op, result) {
+        const li = document.createElement('li'); //html dom 요소를 만듦 여기서는 li태그를 만들기 위해서
+        //li.setAttribute('class', 'calcHistory_li'); //디자인 적 요소
+        const textNode = document.createTextNode(`${numOne} ${op} ${numTwo} = ${result}`);
+        li.appendChild(textNode);
+        document.getElementById('calcHistory').appendChild(li);
+      }
+    </script>
+</body>
