@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>로또추첨기</title>
+  <style>
+    .ball {
+      display: inline-block;
+      border: 1px solid black;
+      border-radius: 20px;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      font-size: 20px;
+      text-align: center;
+      margin-right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="result">추첨 결과는? </div>
+  <div id="bonus">보너스: </div>
+  <script>
+    const candidate = Array(45).fill().map((v, i) => i + 1);
+    const shuffle = [];
+    for (let i = candidate.length; i > 0; i--) { //무작위로 순서를 바꿈
+      const random = Math.floor(Math.random() * candidate.length); //0~44개를 한개 뽑음
+      const spliceArray = candidate.splice(random, 1); // 랜덤값을 하나면 배열값에 삽입
+      const value = spliceArray[0];
+      shuffle.push(value);
+    }
+    console.log(shuffle);
+    const winBalls = shuffle.slice(0, 6).sort((a, b) => a - b); //6은 포함하지 않는 번호 0~5
+    const bouns = shuffle[6]; //7번째 숫자
+    console.log(winBalls, bouns);
+
+    const $result = document.querySelector("#result");
+    const $bonus = document.querySelector("#bonus");
+
+    setTimeout(() => {
+      for (let i = 0; i < winBalls.length; i++) {
+        setTimeout(() => {
+          const $ball = document.createElement("div");
+          $ball.className = "ball";
+          $ball.textContent = winBalls[i];
+          $result.appendChild($ball);
+          if (i === winBalls.length - 1) {
+            setTimeout(() => {
+              const $bonusBall = document.createElement("div");
+              $bonusBall.className = "ball";
+              $bonusBall.textContent = bouns;
+              $bonus.appendChild($bonusBall);
+            }, 1000);
+          }
+        }, (i + 1) * 1000);
+      }
+    }, 1000);
+
+  </script>
+</body>
