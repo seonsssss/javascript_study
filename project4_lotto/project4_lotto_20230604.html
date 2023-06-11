@@ -24,9 +24,9 @@
   <script>
     const candidate = Array(45).fill().map((v, i) => i + 1);
     const shuffle = [];
-    for (let i = candidate.length; i > 0; i--) { //무작위로 순서를 바꿈
-      const random = Math.floor(Math.random() * candidate.length); //0~44개를 한개 뽑음
-      const spliceArray = candidate.splice(random, 1); // 랜덤값을 하나면 배열값에 삽입
+    while (candidate.length > 0) {
+      const random = Math.floor(Math.random() * candidate.length);
+      const spliceArray = candidate.splice(random, 1);
       const value = spliceArray[0];
       shuffle.push(value);
     }
