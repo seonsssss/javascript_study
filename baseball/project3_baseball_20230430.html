@@ -1,54 +1,161 @@
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>숫자야구</title>
+
 </head>
+<style>
+  .playLogs {
+    display: block;
+    /* 초기에는 보임 */
+  }
+
+  .playLogs.hidden {
+    display: none;
+    /* hidden 클래스가 있을 때 안보이도록 변경 */
+  }
+</style>
+
 <body>
-<form id="form">
-  <input type="text" id="input">
-  <button>확인</button>
-</form>
-<div id="logs"></div>
-<script>
-  const $input = document.querySelector('#input');
-  const $form = document.querySelector('#form');
-  const $logs = document.querySelector('#logs');
+  <form id="form">
+    <input type="text" id="input">
+    <button>확인</button>
+  </form>
+  <div id="logs"></div>
+  <script>
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+    let divLog;
+    let divLogsHead;
+    let divLogsBody;
 
-  const numbers = [];
-  for (let n =1 ; n <= 9; n += 1) {
-    numbers.push(n);
-   }
+    let answer = [];
+    let playTimes = 0;
+    function createGame() {
+      const numbers = Array(9).fill().map((v, i) => i + 1);
+      answer = [];
+      for (let n = 0; n <= 3; n += 1) {
+        const index = Math.floor(Math.random() * numbers.length);
+        answer.push(numbers[index]);
+        numbers.splice(index, 1);
+      }
 
-const answer =[];
-for (let n = 0 ; n <= 3 ; n += 1){
-  const index = Math.floor(Math.random()*numbers.length);
-  answer.push(numbers[index]);
-  numbers.splice(index,1);
-}
+      playTimes += 1;
+      console.log(answer);
+      //게임 전체 영역 틀
+      divLog = document.createElement('div');
+      $logs.prepend(divLog);
+      divLog.setAttribute('id', `playTimes${playTimes}`);
 
-console.log(answer);
 
-const tries = [];
-function checkInput(input){
-  if (input.length !== 4){
-    return alert('4자리 숫자를 입력해주세요.');
+      function toggleAccordion(event) {
+        const clickedHead = event.target;
+        const logsBody = clickedHead.nextElementSibling;
+        logsBody.classList.toggle('hidden');
+      };
 
-  if (new Set(input).size !==4){
-    return alert('중복되지 않게 입력해주세요.');
-  }
-  if (tires.includes(input)){
-    return alert('이미 시도한 값입니다.');
-  }
-  return true;
-  }
-}
+      function toggleColor() {
+        const currentColor = window.getComputedStyle(divLogsHead).color;
+        if (currentColor === "rgb(0, 0, 0)") {
+          divLogsHead.style.color = "red";
+        } else if (currentColor === "rgb(255, 0, 0)") {
+          divLogsHead.style.color = "black";
+        }
+      };
 
-$form.addEventListener('sumit', (event) => {
-  event.preventDefault();
-  const value = $input.value;
-  $input.value = '';
-  const vaild = checkInput(value);
-});
-</script>
+        //게임 제목 영역
+        let divLogsHead;
+        divLogsHead = document.createElement('h4');
+        divLogsHead.setAttribute('class', 'playTimes');
+        divLogsHead.append(`GAME[${playTimes}]`);
+        divLogsHead.addEventListener('click', toggleAccordion);
+        divLogsHead.addEventListener('click',toggleColor);
+        divLog.prepend(divLogsHead);
+        //게임 플레이 로그 영역
+        divLogsBody = document.createElement('div');
+        divLogsBody.setAttribute('class', 'playLogs');
+        divLogsBody.append(`[${playTimes}번째] 게임`, document.createElement("br"));
+        divLog.append(divLogsBody);
+      }
+      createGame();
+
+      let tries = [];
+      function checkInput(input) {
+        if (input.length !== 4) {
+          return alert('4자리 숫자를 입력해 주세요.');
+        }
+
+        if (new Set(input).size !== 4) {
+          return alert('중복되지 않게 입력해 주세요.');
+        }
+
+        if (tries.includes(input)) {
+          return alert('이미 시도한 값입니다.');
+        }
+        return true;
+      }
+
+      let out = 0;
+      $form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const value = $input.value;
+        $input.value = '';
+        const vaild = checkInput(value);
+        if (!vaild) return;
+        if (answer.join('') === value) {
+          alert('홈런!');
+          divLogsHead.append(`[${playTimes}번째] 게임 <${tries.length + 1} 회차> ${value} 홈런!`, document.createElement('br'));
+          reGame();
+          return;
+        }
+
+        let strike = 0;
+        let ball = 0;
+
+        for (let i = 0; i < answer.length; i++) {
+          const index = value.indexOf(answer[i]);
+          if (index > -1) { //일치하는 숫자가 존재함 
+            if (index === i) {
+              strike += 1;
+            } else {
+              ball += 1;
+            }
+          }
+        }
+
+        if (strike == 0 && ball == 0) {
+          out++;
+          divLogsBody.append(`${value}: 아웃`, document.createElement('br'));
+        } else {
+          divLogsBody.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'));
+        }
+
+        tries.push(value);
+
+        if (tries.length >= 9 || out == 3) {
+          gameDefeat();
+          reGame();
+        }
+      });
+
+      function gameDefeat() {
+        alert('패배했습니다.');
+        const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+        divLogsHead.appendChild(message);
+      }
+
+      function reGame() {
+        let reGame = confirm('새 게임을 진행 하시겠습니까?');
+        if (reGame == true) {
+          alert('새 게임이 시작됩니다.');
+          out = 0;
+          tries = [];
+          createGame();
+        }
+      }
+  </script>
 </body>
+
 </html>
