@@ -35,27 +35,39 @@
     const bouns = shuffle[6]; //7번째 숫자
     console.log(winBalls, bouns);
 
+    const drawBall = (ball, display) => {
+      const $ball = document.createElement('div');
+      $ball.className = 'ball';
+      $ball.textContent = ball;
+      if (ball < 10) {
+        $ball.style.background = 'red';
+      } else if (ball < 20) {
+        $ball.style.background = 'blue';
+        $ball.style.color = "white";
+      } else if (ball < 30) {
+        $ball.style.background = 'orange';
+      } else if (ball < 40) {
+        $ball.style.background = 'green';
+      } else {
+        $ball.style.background = 'white';
+      }
+      display.appendChild($ball);
+    }
     const $result = document.querySelector("#result");
+
+
+    for (let i = 0; i < winBalls.length; i++) {
+      setTimeout(() => {
+        drawBall(winBalls[i], $result);
+      }, (i + 1) * 1000);
+    }
+
     const $bonus = document.querySelector("#bonus");
 
     setTimeout(() => {
-      for (let i = 0; i < winBalls.length; i++) {
-        setTimeout(() => {
-          const $ball = document.createElement("div");
-          $ball.className = "ball";
-          $ball.textContent = winBalls[i];
-          $result.appendChild($ball);
-          if (i === winBalls.length - 1) {
-            setTimeout(() => {
-              const $bonusBall = document.createElement("div");
-              $bonusBall.className = "ball";
-              $bonusBall.textContent = bouns;
-              $bonus.appendChild($bonusBall);
-            }, 1000);
-          }
-        }, (i + 1) * 1000);
-      }
-    }, 1000);
+      drawBall(bouns, $bonus);
+    }, (winBalls.length + 1) * 1000);
+
 
   </script>
 </body>
