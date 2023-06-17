@@ -21,7 +21,20 @@
 <body>
   <div id="result">추첨 결과는? </div>
   <div id="bonus">보너스: </div>
+  <div id="input"> 사용자 입력값: </div>
   <script>
+    const userNumber = [];
+    do {
+        var input = Math.floor(parseInt(prompt ("사용자가 적은 로또 숫자를 입력해주세요.")));
+
+        if (!isNaN(input) && Number.isInteger(input) && input >= 1 && input <= 45 && userNumber.indexOf(input) === -1) {
+          userNumber.push(input);
+          userNumber.sort((a, b) => a - b);
+        } else {
+          alert("1부터 45사이의 중복되지 않는 숫자를 입력해주세요.")
+        }
+    } while (userNumber.length < 6);
+    
     const candidate = Array(45).fill().map((v, i) => i + 1);
     const shuffle = [];
     while (candidate.length > 0) {
@@ -68,6 +81,33 @@
       drawBall(bouns, $bonus);
     }, (winBalls.length + 1) * 1000);
 
+    const $input = document.querySelector("#input");
+    for (let i = 0; i < userNumber.length; i++) {
+      setTimeout(() => {
+    setTimeout(() => {
+      drawBall(userNumber[i], $input);
+    }, (i + 1) * 1000);
+    }, (winBalls.length + 2) * 1000);
+  }
+
+  setTimeout(() => {
+   winBalls.push(bouns);
+  let Intersection = winBalls.filter(x =>userNumber.includes(x));
+
+  if (Intersection.length < 3) {
+  alert (Intersection.length + "개입니다. 아쉽지만 다음 기회에")
+  } else if (Intersection.length = 3) {
+    alert (Intersection.length + "개입니다. 5등입니다")
+  } else if (Intersection.length = 4) {
+    alert (Intersection.length + "개입니다. 4등입니다")
+  } else if (Intersection.length = 5) {
+    alert (Intersection.length + "개입니다. 3등입니다")
+  } else if (Intersection.length = 6) {
+    alert (Intersection.length + "개입니다. 2등입니다")
+  } else if (Intersection.length = 7) {
+    alert (Intersection.length + "개입니다. 1등입니다")
+  }
+  }, (winBalls.length + 3) * 1000);
 
   </script>
 </body>
