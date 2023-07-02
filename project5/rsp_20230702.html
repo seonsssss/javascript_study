@@ -1,0 +1,60 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>가위바위보</title>
+  <style>
+    #computer {
+      width: 150px;
+      height: 200px;
+      /* 사이즈 바꾸면 background 크기에 따라 반복*/
+    }
+  </style>
+</head>
+
+<body>
+  <div id="computer"></div>
+  <div>
+    <button id="scissors" class="btn">가위</button>
+    <button id="rock" class="btn">바위</button>
+    <button id="paper" class="btn">보</button>
+  </div>
+  <div id="score">0</div>
+  <script>
+    const $computer = document.querySelector('#computer');
+    const $score = document.querySelector('#score');
+    const $rock = document.querySelector('#rock');
+    const $scissors = document.querySelector('#scissors');
+    const $paper = document.querySelector('#paper');
+    const IMG_URL = './images/rsp.png'; //..한칸위로
+    $computer.style.background = `url(${IMG_URL}) 0 0`;
+    $computer.style.backgroundSize = 'auto 200px'; //가져온 거에 사이즈를 200px만
+
+    const rspX = {
+      scissors: "0",
+      rock: "-220px",
+      paper: "-440px"
+      //잘라올 위치
+    }
+
+    let computerChoice = 'scissors';
+    const changeComputerHand = () => {
+      if (computerChoice == 'rock') {
+        computerChoice = 'scissors';
+      } else if (computerChoice == 'scissors') {
+        computerChoice = 'paper';
+      } else if (computerChoice == 'paper') {
+        computerChoice = 'rock';
+      }
+      $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;//위치에 따라서 computerChoice을 바꿔줘
+      $computer.style.backgroundSize = 'auto 200px';
+    }
+
+    let intervalId = setInterval(changeComputerHand, 50);// 나중에 함수 나가게 하려고 할당해줌
+    //이후동작고민
+
+    
+  </script>
+</body>
+
+</html>
