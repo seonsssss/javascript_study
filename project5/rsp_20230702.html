@@ -52,8 +52,37 @@
 
     let intervalId = setInterval(changeComputerHand, 50);// 나중에 함수 나가게 하려고 할당해줌
     //이후동작고민
+    let score = 0;
+    const scoreElement = document.getElementById('score');
 
-    
+    function customerBtnClk(userChoice) {
+      clearTimeout(intervalId);
+      if (computerChoice === userChoice) {
+        alert("비겼습니다.")
+      } else if (computerChoice == "rock" && userChoice == "scissors" ||
+        computerChoice == "scissors" && userChoice == "paper" || computerChoice == "paper" && userChoice == "rock") {
+        alert('졌습니다.')
+      } else {
+        alert('이겼습니다.')
+        score++; // 이길 때마다 점수 증가
+        scoreElement.textContent = score;
+      }
+    }
+
+
+    $scissors.addEventListener('click', (event) => {
+      customerBtnClk('scissors')
+    });
+    $rock.addEventListener('click', (event) => {
+      customerBtnClk('rock')
+    });
+    $paper.addEventListener('click', (event) => {
+      customerBtnClk('paper')
+    });
+
+    intervalId = setInterval(customerBtnClk, 50);
+
+
   </script>
 </body>
 
