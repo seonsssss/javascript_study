@@ -62,7 +62,8 @@
       } else if (computerChoice == "rock" && userChoice == "scissors" ||
         computerChoice == "scissors" && userChoice == "paper" || computerChoice == "paper" && userChoice == "rock") {
         alert('졌습니다.')
-      } else {
+      } else if (computerChoice == "rock" && userChoice == "paper" ||
+        computerChoice == "scissors" && userChoice == "rock" || computerChoice == "paper" && userChoice == "scissors") {
         alert('이겼습니다.')
         score++; // 이길 때마다 점수 증가
         scoreElement.textContent = score;
