@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>끝말잇기</title>
+</head>
+
+<body>
+    <div><span id= "order">1</span>번째 참가자</div>
+    <div>현재 제시어 : <span id= "word"> </span><div>
+        <input type="text">
+        <button>입력</button>
+        <div>제시어 : <span id= "words"> </span></div>
+</body>
+<script>
+    number = Number(prompt("몇 명이 참가하나요?"));
+
+    if (number) {
+    const $button = document.querySelector("button");
+    const $input = document.querySelector("input");
+    const $word = document.querySelector("#word");
+    const $order = document.querySelector("#order");
+    const $words = document.querySelector("#words");
+
+
+    let word;
+    let newWord;
+    let answer = [];
+
+    const onClickButton = () => {
+        if (answer.includes(newWord) == false && newWord.length <= 3 && (!word || word[word.length - 1] === newWord[0])) {
+            word = newWord
+            $word.textContent = word;
+            $words.textContent += word + "-";
+            answer.push(word);
+            const order = Number($order.textContent);
+            if (order + 1 > number) {
+                $order.textContent = 1;
+            } else {
+                $order.textContent = order + 1;
+            }
+        } else {
+                if (answer.includes(newWord) == true) {
+                    alert("중복된 제시어가 있습니다.")
+                } else {
+                    alert("올바르지 않은 단어입니다.")
+                }
+
+                let reGame = confirm("게임을 다시 시작하시겠습니까?")
+
+                if (reGame) {
+                    $order.textContent = 1;
+                    $word.textContent = "";
+                    $words.textContent = '';
+                    word = null
+                    newWord = null
+                    answer = [];
+                }
+            }
+            $input.value = "";
+            $input.focus();
+        };
+        const onInput = (e) => {
+            newWord = e.target.value;
+        };
+
+        const onInputKeyPress  = (e) => {
+            if(e.key = "Enter"){
+                onClickButton();
+            }
+        };
+
+        $button.addEventListener("click", onClickButton);
+        $input.addEventListener("input", onInput);
+        $input.addEventListener("keypress", onInputKeyPress);
+    };
+
+
+</script>
+</body>
+
+</html>
