@@ -53,23 +53,36 @@
     let intervalId = setInterval(changeComputerHand, 50);// 나중에 함수 나가게 하려고 할당해줌
     //이후동작고민
     let score = 0;
+    let clickable = true;
     const scoreElement = document.getElementById('score');
 
     function customerBtnClk(userChoice) {
+      if(clickable){
       clearTimeout(intervalId);
+      clickable = false;
       if (computerChoice === userChoice) {
         alert("비겼습니다.")
       } else if (computerChoice == "rock" && userChoice == "scissors" ||
-        computerChoice == "scissors" && userChoice == "paper" || computerChoice == "paper" && userChoice == "rock") {
+        computerChoice == "scissors" && userChoice == "paper" ||
+        computerChoice == "paper" && userChoice == "rock") {
         alert('졌습니다.')
       } else if (computerChoice == "rock" && userChoice == "paper" ||
-        computerChoice == "scissors" && userChoice == "rock" || computerChoice == "paper" && userChoice == "scissors") {
+        computerChoice == "scissors" && userChoice == "rock" ||
+        computerChoice == "paper" && userChoice == "scissors") {
         alert('이겼습니다.')
         score++; // 이길 때마다 점수 증가
         scoreElement.textContent = score;
       }
+      if (score == 3) {
+        alert("사용자 승리")
+      } else {
+        setTimeout(() => {
+          clickable = true;
+          intervalId = setInterval(changeComputerHand, 50);
+        }, 1000);
+      }
     }
-
+    }
 
     $scissors.addEventListener('click', (event) => {
       customerBtnClk('scissors')
@@ -81,7 +94,7 @@
       customerBtnClk('paper')
     });
 
-    intervalId = setInterval(customerBtnClk, 50);
+
 
 
   </script>
