@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>틱택토</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: 1px solid black;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    const { body } = document; // body의 접근 body 태그 안에 최초로 무엇을 만들 때 주로 사용 document.body랑 같음
+    const $table = document.createElement('table');
+    const $result = document.createElement('div');
+
+    const rows = []; //body태그에 게임을 할 수 있는 
+    let turn = 'O';
+
+    const checkWinner = (target) => {
+      let rowIdx;
+      let cellIdx;
+      rows.forEach((row, ri) => { //한행(줄)씩
+        row.forEach((cell, ci) => {//한열씩
+          if (cell === target) {
+            rowIdx = ri;
+            cellIdx = ci;
+          }
+        })
+      });
+      //세칸이 다 채워졌는지 확인
+      let hasWinner = false;
+      //가로줄 검사
+      if (
+        rows[rowIdx][0].textContent === turn &&
+        rows[rowIdx][1].textContent === turn &&
+        rows[rowIdx][2].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+
+      //세로줄 검사
+      if (
+        rows[0][cellIdx].textContent === turn &&
+        rows[1][cellIdx].textContent === turn &&
+        rows[2][cellIdx].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+
+      //왼쪽 > 오른쪽으로 대각선 검사
+      if (
+        rows[0][0].textContent === turn &&
+        rows[1][1].textContent === turn &&
+        rows[2][2].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+
+      //오른쪽 > 왼쪽으로 대각선 검사
+      if (
+        rows[0][2].textContent === turn &&
+        rows[1][1].textContent === turn &&
+        rows[2][0].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+      return hasWinner;
+    };
+
+    const callBack = (event) => {
+      if (event.target.textContent !== '') {
+        console.log('빈칸 X');
+        return;
+      }
+      console.log('빈칸 o');
+      event.target.textContent = turn;
+
+
+      const hasWinner = checkWinner(event.target);
+      if (hasWinner) {
+        $result.textContent = `${turn}님이 승리`;
+        $table.removeEventListener('click', callBack);
+      }
+      turn = turn === 'X' ? 'O' : 'X'; //다음클릭 값 X
+    } // 네모칸을 클릭 했을 때 비어 있으면 0표시
+
+
+    for (let i = 1; i <= 3; i++) {
+      const $tr = document.createElement('tr');
+      const cells = [];
+      for (let j = 1; j <= 3; j++) {
+        const $td = document.createElement('td'); //
+        //$td.addEventListener('click' , callBack); //제일 세분화 된 td에 넣어놓기
+        cells.push($td);
+        $tr.appendChild($td);
+      }
+      rows.push(cells);
+      $table.appendChild($tr);
+    }
+
+    $table.addEventListener('click', callBack); //버블링 효과
+
+    body.appendChild($table);
+    body.appendChild($result);
+  </script>
+</body>
+
+</html>
