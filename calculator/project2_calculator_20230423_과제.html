@@ -29,7 +29,27 @@
     button {
       width: 50px;
       height: 50px;
-      margin: 5px
+      margin: 5px;
+    }
+
+    .button_high {
+      background-color: rgb(228, 183, 226);
+      border-color: rgb(221, 167, 218);
+    }
+
+    .button_middle {
+      background-color: rgb(222, 139, 218);
+      border-color: rgb(199, 107, 194);
+    }
+
+    .button_low {
+      background-color: rgb(186, 93, 182);
+      border-color: rgb(199, 97, 194);
+    }
+
+    .button_last {
+      background-color: rgb(184, 63, 178);
+      border-color: rgb(196, 57, 189);
     }
 
     .sub_content {
@@ -41,7 +61,21 @@
     .overflow {
       overflow: auto;
     }
-    .btn_4{width: 246px; height: 50px;}
+
+    .btn_4 {
+      width: 246px;
+      height: 50px;
+      background-color: rgb(248, 173, 244);
+      border-color: rgb(232, 146, 228);
+    }
+
+    .btn_5,
+    .btn_6 {
+      width: 116px;
+      height: 50px;
+      background-color: rgb(248, 173, 244);
+      border-color: rgb(232, 146, 228);
+    }
   </style>
 </head>
 
@@ -52,31 +86,35 @@
     <input readonly id="operator">
     <input readonly type="text" id="result"> <!--readonly : 읽기 전용-->
     <div class="row">
-      <button id="num-7">7</button>
-      <button id="num-8">8</button>
-      <button id="num-9">9</button>
-      <button id="plus">+</button>
+      <button id="num-7" class=button_high>7</button>
+      <button id="num-8" class=button_high>8</button>
+      <button id="num-9" class=button_high>9</button>
+      <button id="plus" class=button_high>+</button>
     </div>
     <div class="row">
-      <button id="num-4">4</button>
-      <button id="num-5">5</button>
-      <button id="num-6">6</button>
-      <button id="minus">-</button>
+      <button id="num-4" class=button_middle>4</button>
+      <button id="num-5" class=button_middle>5</button>
+      <button id="num-6" class=button_middle>6</button>
+      <button id="minus" class=button_middle>-</button>
     </div>
     <div class="row">
-      <button id="num-1">1</button>
-      <button id="num-2">2</button>
-      <button id="num-3">3</button>
-      <button id="divide">/</button>
+      <button id="num-1" class=button_low>1</button>
+      <button id="num-2" class=button_low>2</button>
+      <button id="num-3" class=button_low>3</button>
+      <button id="divide" class=button_low>/</button>
     </div>
     <div class="row">
-      <button id="clear">C</button>
-      <button id="num-0">0</button>
-      <button id="point">.</button>
-      <button id="multiply">x</button>
+      <button id="clear" class=button_last>C</button>
+      <button id="num-0" class=button_last>0</button>
+      <button id="point" class=button_last>.</button>
+      <button id="multiply" class=button_last>x</button>
     </div>
     <div class="row">
-      <button id="calculate" class ="btn_4">=</button>
+      <button id="open-parenthesis" class=btn_5>(</button>
+      <button id="close-parenthesis" class=btn_6>)</button>
+    </div>
+    <div class="row">
+      <button id="calculate" class="btn_4">=</button>
     </div>
   </div>
   <div class="sub_content overflow">
@@ -91,7 +129,7 @@
       let currOp = ''; //현재 op
       let $operator = document.querySelector("#operator"); //+-*/ 표시
       let $result = document.querySelector("#result"); //검색창
-
+      let parentheses = [];
       let opObj = {
         plus: '+',
         minus: '-',
@@ -100,8 +138,9 @@
       };
 
       const onClickNumber = (event) => {// (선언)이벤트 정보를 전달하는 괄호가 없을 때 호출하는 쪽에도 괄호가 x
-        //EVENT 전달 (onClickNumber//onKeyDownNumber 합치기 가능)
+        //EVENT 전달 (onClickNumber//onKeyDownNumber 합치기 가능
         if (!currOp) { //비어있다
+          console.log(event)
           numOne += event.target.textContent;
           $result.value += event.target.textContent;
           return;
@@ -112,7 +151,21 @@
         }
         numTwo += event.target.textContent;
         $result.value += event.target.textContent;
-      }
+
+
+        if (event.target.id === 'open-parenthesis') {
+          $result.value += '(';
+          parentheses.push('(');
+        } else if (event.target.id === 'close-parenthesis') {
+          if (parentheses.length > 0) {
+            $result.value += ')';
+            parentheses.pop();
+          }
+          return;
+        };
+      };
+
+
 
       const onKeyDownNumber = (num) => {
         //고차함수 파라미터(event 정보 x)를 전달하는 함수 _키보드 1~9클릭이 되면 화면에 표시하기 위해서
@@ -134,9 +187,9 @@
       }
       document.querySelector(`#point`).addEventListener('click', onClickNumber);
       const onClickOperator = (param) => {
-        let eventChk = param.isTrusted; //버튼 클릭 event x
+        let eventClk = param.isTrusted; //버튼 클릭 event x
         let op = param; //1.2 번째줄 키보드로 사용할 떄 필요한 코드
-        if (eventChk != undefined) {
+        if (eventClk != undefined) {
           op = opObj[param.target.id];
         }
 
@@ -156,110 +209,155 @@
         if (numTwo) {
           calculate('op', op);
         }
-      }
 
-      for (let key in opObj) {
-        document.querySelector(`#${key}`).addEventListener('click', onClickOperator);
-      }
-
-      document.querySelector('#calculate').addEventListener('click', calculateResult);
-
-      function calculateResult() {
-        if (numTwo) {
-          calculate('calc', '');
-        } else {
-          alert('숫자를 먼저 입력하세요.');
+        if (eventClk != undefinded) {
+          if (param.target.id === 'open-parenthesis') {
+            op = '('
+            $result.value += op;
+            parentheses.push(op);
+          } else if (param.target.id === 'close-parenthesis') {
+            op = ')';
+            if (parentheses.length > 0) {
+              $result.value += op;
+              parentheses.pop();
+            }
+          }
         }
-      }
+      };
 
-      function calculate(type, opType) {
-        let tmpOp = currOp;
-        if (type == 'op') {
-          tmpOp = prevOp;
+        for (let key in opObj) {
+          document.querySelector(`#${key}`).addEventListener('click', onClickOperator);
         }
 
-        let isWrite = true;
-        switch (tmpOp) {
-          case '+':
-          $result.value = parseFloat((Number(numOne) + Number(numTwo)).toFixed(1));
-            break;
-          case '-':
-          $result.value = parseFloat((Number(numOne) - Number(numTwo)).toFixed(1));
-            break;
-          case '*':
-          $result.value = Number(numOne) * Number(numTwo);
-            break;
-          case '/':
-          $result.value= Number(numOne) / Number(numTwo);
-            break;
-          default:
-            isWrite = false;
-            break;
-        }
-        if (isWrite) {
-          writeCalculateHistory(numOne, numTwo, tmpOp, $result.value);
-        } //결과를 쓰겠습니다
+        document.querySelector('#calculate').addEventListener('click', calculateResult);
 
-        $operator.value = '';
-        numOne = $result.value;
-        numTwo = '';
-
-        if (type == 'calc') {
-          currOp = '';
-        } else {
-          prevOp = currOp;
-        }
-
-        if (numOne) {
-          currOp = opType;
-          $operator.value = opType;
-        }
-      }
-
-      document.querySelector('#clear').addEventListener('click', clearResult);
-
-      function clearResult() {
-        numOne = '';
-        currOp = '';
-        numTwo = '';
-        $operator.value = '';
-        $result.value = '';
-      }
-
-      document.addEventListener('keydown', (event) => {
-        console.log(event);//event 정보를 알아보기 위해
-        console.log(event.key);
-        let key = event.key;
-
-        if (!isNaN(Number(key)) || key === ".") {//숫자라는걸 명시해줌 number _!추가해서 숫자입력
-          onKeyDownNumber(key); // key를 전달해준다 //숫자 클릭하면 ok
-        } else { //기호가 자판으로 눌렀을 때
-          switch (key) {
-            case "+":
-            case "-":
-            case "*":
-            case "/":
-              onClickOperator(key);
-              break;
-            case "=":
-            case "Enter":
-              calculateResult(); //전달하는 인수가 x_매개변수가 없기때문
-              break;
-            case "Escape":
-            case "c":
-              clearResult();
-              break;
+        function calculateResult() {
+          if (numTwo) {
+            calculate('calc', '');
+          } else {
+            alert('숫자를 먼저 입력하세요.');
           }
 
+          while (parentheses.length > 0) {
+            $result.value += ')';
+            parentheses.pop();
+          }
         }
-      });
 
-      function writeCalculateHistory(numOne, numTwo, op, result) {
-        const li = document.createElement('li'); //html dom 요소를 만듦 여기서는 li태그를 만들기 위해서
-        //li.setAttribute('class', 'calcHistory_li'); //디자인 적 요소
-        const textNode = document.createTextNode(`${numOne} ${op} ${numTwo} = ${result}`);
-        li.appendChild(textNode);
-        document.getElementById('calcHistory').appendChild(li);
-      }
+        function calculate(type, opType) {
+          let tmpOp = currOp;
+          if (type == 'op') {
+            tmpOp = prevOp;
+          }
+
+          let isWrite = true;
+          switch (tmpOp) {
+            case '+':
+              $result.value = parseFloat((Number(numOne) + Number(numTwo)).toFixed(1));
+              break;
+            case '-':
+              $result.value = parseFloat((Number(numOne) - Number(numTwo)).toFixed(1));
+              break;
+            case '*':
+              $result.value = parseFloat((Number(numOne) * Number(numTwo)).toFixed(1));
+              break;
+            case '/':
+              $result.value = parseFloat((Number(numOne) / Number(numTwo)).toFixed(1));
+              break;
+            default:
+              isWrite = false;
+              break;
+          }
+          if (isWrite) {
+            writeCalculateHistory(numOne, numTwo, tmpOp, $result.value);
+          } //결과를 쓰겠습니다
+
+          $operator.value = '';
+          numOne = $result.value;
+          numTwo = '';
+
+          if (type == 'calc') {
+            currOp = '';
+          } else {
+            prevOp = currOp;
+          }
+
+          if (numOne) {
+            currOp = opType;
+            $operator.value = opType;
+          }
+
+          let openingParenthesesCount = parentheses.filter((p) => p === '(').length;
+          let closingParenthesesCount = parentheses.filter((p) => p === ')').length;
+
+          while (closingParenthesesCount < openingParenthesesCount) {
+            $result.value += ')';
+            parentheses.push(')');
+            closingParenthesesCount++;
+          }
+        }
+
+        document.querySelector('#clear').addEventListener('click', clearResult);
+
+        function clearResult() {
+          numOne = '';
+          currOp = '';
+          numTwo = '';
+          $operator.value = '';
+          $result.value = '';
+          parentheses = [];
+        }
+
+        function prevBtnClk() {
+          if (numTwo) {
+            numTwo = numTwo.slice(0, -1);
+            $result.value = $result.value.slice(0, -1);
+          } else if (currOp) {
+            currOp = '';
+            $operator.value = '';
+          } else if (numOne) {
+            numOne = numOne.slice(0, -1);
+            $result.value = $result.value.slice(0, -1);
+          }
+        }
+
+        document.addEventListener('keydown', (event) => {
+          console.log(event);//event 정보를 알아보기 위해
+          console.log(event.key);
+          let key = event.key;
+
+          if (!isNaN(Number(key)) || key === ".") {//숫자라는걸 명시해줌 number _!추가해서 숫자입력
+            onKeyDownNumber(key); // key를 전달해준다 //숫자 클릭하면 ok
+          } else { //기호가 자판으로 눌렀을 때
+            switch (key) {
+              case "+":
+              case "-":
+              case "*":
+              case "/":
+                onClickOperator(key);
+                break;
+              case "=":
+              case "Enter":
+                calculateResult(); //전달하는 인수가 x_매개변수가 없기때문
+                break;
+              case "Escape":
+              case "c":
+                clearResult();
+                break;
+              case "Backspace":
+                prevBtnClk();
+
+            }
+
+          }
+        });
+
+        function writeCalculateHistory(numOne, numTwo, op, result) {
+          const li = document.createElement('li'); //html dom 요소를 만듦 여기서는 li태그를 만들기 위해서
+          //li.setAttribute('class', 'calcHistory_li'); //디자인 적 요소
+          const textNode = document.createTextNode(`${numOne} ${op} ${numTwo} = ${result}`);
+          li.appendChild(textNode);
+          document.getElementById('calcHistory').appendChild(li);
+        }
     </script>
 </body>

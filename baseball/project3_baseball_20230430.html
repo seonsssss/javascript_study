@@ -19,7 +19,7 @@
 
 <body>
   <form id="form">
-    <input type="text" id="input">
+    <input type="text" id="input" autofocus>
     <button>확인</button>
     <p>
       <label for="Timer">남은시간 : </label>
@@ -34,8 +34,7 @@
     const $logs = document.querySelector('#logs');
     const $button = document.querySelector('#button');
     const times = document.getElementById('times');
-    const reSet = document.getElementById('reSet');
-
+    
     let time = 60000;
     let min = 1;
     let sec = 60;
@@ -90,9 +89,6 @@
       divLog = document.createElement('div');
       $logs.prepend(divLog);
       divLog.setAttribute('id', `playTimes${playTimes}`);
-
-
-
 
       function toggleAccordion(event) {
         const clickedHead = event.target;

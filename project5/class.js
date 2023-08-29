@@ -118,6 +118,39 @@ hotel.checkInTime();
 hotel.checkoutTime();
 hotel.reservationDay();
 hotel.getTotalPrice('premium');
+///
+class Reservation {
+    constructor(obj) {
+        this.name = obj.name;
+        this.reservationDate = obj.reservationDate;
+        this.reservationTime = obj.reservationTime;
+        this.price = obj.price;
+    } // 배열의 형태보다는 객체 형태가 더 쉽게 볼 수 있음
+    
+    reserveName() {
+        console.log(`${this.name}를 예약했습니다.`);
+    }
+
+    reserveDate() {
+        console.log(`예약하신 날짜는 ${this.reservationDate}입니다.`);
+    }
+
+    reserveTime() {
+        console.log(`사용가능한 시간은 ${this.reservationTime}입니다.`);
+    }
+
+    reservePrice(){
+        console.log(`결제 금액은 총 ${this.price}입니다.`);
+    }
+}
+
+
+class Movie extends Reservation {
+    constructor(obj) {
+        this.cinema = obj.cinema;
+        this.seatCount = obj.seatCount;
+    }
+}
 
 ///
 class Me {
@@ -183,14 +216,14 @@ class Company {
     }
 
 
-CompanyNameIs() {
-    console.log(`회사 이름 : ${this.CompanyName}`);
-}
+    CompanyNameIs() {
+        console.log(`회사 이름 : ${this.CompanyName}`);
+    }
 
-CompanyAnniversary(thisYear,anniversary){
-    this.age = Number(thisYear) - Number(anniversary);
-    console.log(`${this.CompanyName}회사는 창립한지  ${this.age} 주년 입니다.`);
-}
+    CompanyAnniversary(thisYear, anniversary) {
+        this.age = Number(thisYear) - Number(anniversary);
+        console.log(`${this.CompanyName}회사는 창립한지  ${this.age} 주년 입니다.`);
+    }
 }
 
 let CompanyObj = {

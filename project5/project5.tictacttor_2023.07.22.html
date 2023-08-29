@@ -77,24 +77,48 @@
       }
       return hasWinner;
     };
+    const checkWinAndDraw = (target) => {
+      const hasWinner = checkWinner(target);
+      if (hasWinner) {
+        $result.textContent = `${turn}님이 승리`;
+        $table.removeEventListener('click', callBack);
+        return;
+      }
 
+      const draw = rows.flat().every((cell) => cell.textContent);
+      if (draw) {
+        $result.textContent = "무승부";
+        $table.removeEventListener('click', callBack);
+        return;
+      }
+      turn = turn === 'X' ? 'O' : 'X'; //다음클릭 값 X // 네모칸을 클릭 했을 때 비어 있으면 0표시
+
+    }
+    let clickable = true;
     const callBack = (event) => {
+
+      if (!clickable) {
+        return;
+      }
       if (event.target.textContent !== '') {
         console.log('빈칸 X');
         return;
       }
       console.log('빈칸 o');
       event.target.textContent = turn;
+      checkWinAndDraw(event.target);//들어오는 값 td
 
-
-      const hasWinner = checkWinner(event.target);
-      if (hasWinner) {
-        $result.textContent = `${turn}님이 승리`;
-        $table.removeEventListener('click', callBack);
+      if (turn === "X") {
+        const emptyCells = rows.flat().filter((v) => !v.textContent) //조건에 맞는 내용을 필터링 해서 새로운 배열을 만들겠다 //!비어있는 애들을 가져올 수 있도롣(!붙여서 true)
+        const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        clickable = false;
+        setTimeout(() => {
+          randomCell.textContent = "X";
+          checkWinAndDraw(randomCell);
+          clickable = true;
+        }, 1000);
       }
-      turn = turn === 'X' ? 'O' : 'X'; //다음클릭 값 X
-    } // 네모칸을 클릭 했을 때 비어 있으면 0표시
-
+    };
 
     for (let i = 1; i <= 3; i++) {
       const $tr = document.createElement('tr');

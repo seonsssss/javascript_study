@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>짝 맞추기</title>
+    <style>
+        .card {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            width: 70px;
+            height: 100px;
+            perspective: 140px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front {
+            background: navy;
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+            backface-visibility: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper"></div>
+    <script>
+        const $wrapper = document.querySelector('#wrapper');
+        const total = 12;
+        const colors = ['red', 'orange', 'yellow', 'green', 'white', 'pink'];
+        let colorCopy = colors.concat(colors); //하나의 배열을 만들어내는 기능 colors의 배열을 복사
+        let shuffled = [];
+
+        function shuffle() { //피셔=예이츠 셔플(알고리즘 이름)
+            for (let i = 0; colorCopy.length > 0; i++) {
+                const randomIndex = Math.floor(Math.random() * colorCopy.length);
+                shuffled = shuffled.concat(colorCopy.splice(randomIndex, 1));//배열 재복사 후 한개씩 제거
+            }
+        } //카드 mix
+
+        function createCard(i) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const cardInner = document.createElement('div');
+            cardInner.className = 'card-inner';
+            const cardFront = document.createElement('div');
+            cardFront.className = 'card-front';
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
+            cardBack.style.backgroundColor = shuffled[i];
+            cardInner.appendChild(cardFront);
+            cardInner.appendChild(cardBack);//카드 이너에 두개를 넣어놓고 
+            card.appendChild(cardInner); //카드 안에
+            return card;
+        }
+
+        function startGame() {
+            shuffle();
+            for (let i = 0; i < total; i++) {
+                const card = createCard(i);
+                $wrapper.appendChild(card);
+            }
+        }
+
+        startGame();
+    </script>
+</body>
+
+</html>
