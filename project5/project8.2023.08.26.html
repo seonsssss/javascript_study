@@ -54,6 +54,10 @@
         const colors = ['red', 'orange', 'yellow', 'green', 'white', 'pink'];
         let colorCopy = colors.concat(colors); //하나의 배열을 만들어내는 기능 colors의 배열을 복사
         let shuffled = [];
+        let correctCard;
+        let clicked = [];
+        let completed = [];
+        let clickable = false;
 
         function shuffle() { //피셔=예이츠 셔플(알고리즘 이름)
             for (let i = 0; colorCopy.length > 0; i++) {
@@ -78,15 +82,73 @@
             return card;
         }
 
+        function onClickCard() {
+            if (!clickable || completed.includes(this) || clicked[0] === this) {
+                return;
+            }
+            this.classList.toggle('flipped');
+            clicked.push(this);
+            if (clicked.length !== 2) {
+                return;
+            }
+            const firstBackColor = clicked[0].querySelector('.card-back').style.backgroundColor;
+            const secondBackColor = clicked[1].querySelector('.card-back').style.backgroundColor;
+            if (firstBackColor === secondBackColor) {
+                completed.push(clicked[0]);
+                completed.push(clicked[1]);
+                clicked = [];
+                if (completed.length !== total) {
+                    return;
+                }
+                setTimeout(() => {
+                    alert('축하합니다!');
+                    resetGame();
+                }, 1000);
+                return;
+            }
+            clickable = false;
+            setTimeout(() => {
+                clicked[0].classList.remove('flipped');
+                clicked[1].classList.remove('flipped');
+                clicked = [];
+                clickable = true;
+            }, 1000)
+        }
+
         function startGame() {
+            clickable = false;
             shuffle();
             for (let i = 0; i < total; i++) {
                 const card = createCard(i);
+                card.addEventListener('click', onClickCard);
                 $wrapper.appendChild(card);
             }
+
+            document.querySelectorAll('.card').forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('flipped');
+                }, 1000 + 100 * index);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('.card').forEach((card) => {
+                    card.classList.remove('flipped');
+                });
+                clickable = true;
+            }, 5000);
         }
 
         startGame();
+
+        function resetGame() {
+            $wrapper.innerHTML = '';
+            colorCopy = colors.concat(colors);
+            shuffled = [];
+            completed = [];
+            startGame();
+        }
+
+
     </script>
 </body>
 
